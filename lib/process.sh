@@ -1,7 +1,15 @@
+########################################################################
+# FILE NAME : process.sh
+# PURPOSE   : Process analysis (CPU/memory, states, long-running)
+# AUTHOR    : Bernard Lim (8001381B)
+# VERSION   : 1.0
+########################################################################
+
 # =====================================================================
 # PROCESS ANALYSIS MODULE (Option 6)
 # =====================================================================
 
+# Analyse running processes (top CPU/mem, states, >24h)
 analyze_running_processes() {
   clear
   box_top

@@ -1,146 +1,148 @@
-# =====================================================================
-# BACKUP MODULE (Options 3 & 4)
-# Incremental Backup (rsync + trash) & Backup Verification
-# =====================================================================
+########################################################################
+# FILE NAME : backup.sh
+# PURPOSE   : Incremental backup creation & backup integrity verification
+# PROJECT   : System Monitor
+# AUTHOR    : Bernard Lim (8001381B)
+# VERSION   : 1.1
+#
+# FEATURES:
+#   - Incremental backups using rsync
+#   - Trash mechanism for deleted files
+#   - User-confirmed creation of missing backup directories
+#   - File-by-file verification with mismatch reporting
+########################################################################
 
-# Data + Trash subfolders under the configured BACKUP_DEST
-# Example structure:
-#   backups/data/<source_name>_YYYY-MM-DD_HH-MM/
-#   backups/trash/<source_name>/<filename>.<timestamp>
+# Base data/trash directories inside backups/
 BACKUP_DATA_DIR="${BACKUP_DATA_DIR:-$BACKUP_DEST/data}"
 BACKUP_TRASH_DIR="${BACKUP_TRASH_DIR:-$BACKUP_DEST/trash}"
 
-# ------------------------------------------------------------
-# 2.1 INCREMENTAL BACKUP (rsync + manual delete -> trash)
-# ------------------------------------------------------------
+# =====================================================================
+# OPTION 3 — Incremental Backup
+# =====================================================================
+
+# Create an incremental backup with trash-handling for deleted files
 create_incremental_backup() {
   while true; do
     clear
     box_top
     box_row "$YELLOW$BOLD" "INCREMENTAL BACKUP"
     box_sep
-
     echo "Press M to return to menu."
     echo
 
-    # ------------------------------
-    # Prompt: Source Directory
-    # ------------------------------
+    # --- Ask for source directory ---
     printf "Enter source directory [%s]: " "$BACKUP_SOURCE"
     read -r src_in
-
-    case "$src_in" in
-      M|m) return ;;
-    esac
-
+    [[ "$src_in" =~ ^[Mm]$ ]] && return
     local src="${src_in:-$BACKUP_SOURCE}"
 
-    # ------------------------------
-    # Prompt: Backup Data Directory (where backup folders live)
-    # Example default: /path/to/project/backups/data
-    # ------------------------------
+    # Validate source directory
+    if [[ ! -d "$src" ]]; then
+      err "Source directory does not exist: $src"
+      log_error "Backup failed – missing source: $src"
+      box_bottom
+      printf "\nPress M to return..."
+      while read -r k; do [[ "$k" =~ ^[Mm]$ ]] && return; done
+    fi
+
+    # --- Ask for backup data directory ---
     printf "Enter backup data directory [%s]: " "$BACKUP_DATA_DIR"
     read -r dest_in
-
-    case "$dest_in" in
-      M|m) return ;;
-    esac
-
+    [[ "$dest_in" =~ ^[Mm]$ ]] && return
     local data_dest="${dest_in:-$BACKUP_DATA_DIR}"
+
     [[ "$data_dest" != /* ]] && data_dest="$BASE_DIR/$data_dest"
-
-    echo
-    echo "Source           : $src"
-    echo "Backup data dir  : $data_dest"
     echo
 
-    # Validate source
-    if [[ ! -d "$src" ]]; then
-      err "Source directory not found."
-      log_error "Backup failed – source not found: $src"
-      box_bottom
-
-      printf "\nPress M to return... "
+    # === Missing directory? Ask user if they want to create it ===
+    if [[ ! -d "$data_dest" ]]; then
+      err "Backup data directory does not exist: $data_dest"
+      log_warn "Missing backup directory: $data_dest"
+      echo
+      echo "Would you like System Monitor to create it?"
+      echo "(Y) Yes — Create directory"
+      echo "(N) No  — Return"
+      echo
       while true; do
-        read -r k
-        [[ "$k" =~ ^[Mm]$ ]] && return
+        printf "Enter choice: "
+        read -r ans
+        case "$ans" in
+          Y|y)
+            if mkdir -p "$data_dest"; then
+              ok "Directory created: $data_dest"
+              log_info "Created missing backup directory: $data_dest"
+            else
+              err "Failed to create directory."
+              log_error "Failed to create backup directory: $data_dest"
+              box_bottom
+              printf "Press M to return..."
+              while read -r k; do [[ "$k" =~ ^[Mm]$ ]] && return; done
+            fi
+            break
+            ;;
+          N|n)
+            box_bottom
+            return
+            ;;
+          *) echo "Please enter Y or N." ;;
+        esac
       done
     fi
 
-    # Ensure data + trash directories exist
-    mkdir -p "$data_dest"
-
-    local trash_root trash_source_dir
-    trash_root="$BACKUP_TRASH_DIR"
+    # Ensure trash exists
+    local trash_root="$BACKUP_TRASH_DIR"
     [[ "$trash_root" != /* ]] && trash_root="$BASE_DIR/$trash_root"
     mkdir -p "$trash_root"
 
-    # ------------------------------
-    # Resolve source name and existing backup dir
-    # ------------------------------
-    local source_name timestamp backup_dir existing_backup new_backup_dir
+    # Resolve source folder name
+    local source_name timestamp
     source_name="$(basename "$src")"
     timestamp="$(date +%Y-%m-%d_%H-%M)"
 
-    # Find the latest existing backup directory for this source, if any
+    # Find latest backup for this source, if any
+    local existing_backup backup_dir
     existing_backup="$(find "$data_dest" -maxdepth 1 -type d -name "${source_name}_*" 2>/dev/null | sort | tail -n 1)"
 
     if [[ -n "$existing_backup" ]]; then
       backup_dir="$existing_backup"
-      info "Existing backup directory found: $(basename "$backup_dir")"
+      info "Existing backup found: $(basename "$backup_dir")"
     else
       backup_dir="$data_dest/${source_name}_$timestamp"
       mkdir -p "$backup_dir"
-      info "No existing backup found. Creating new backup at: $(basename "$backup_dir")"
+      info "No existing backup found. Creating new folder."
     fi
 
-    # ------------------------------
-    # Setup trash path: backups/trash/<source_name>/
-    # ------------------------------
-    trash_source_dir="$trash_root/$source_name"
+    # Setup source-specific trash folder
+    local trash_source_dir="$trash_root/$source_name"
     mkdir -p "$trash_source_dir"
 
-    # ------------------------------
-    # Detect deleted files and move them to trash
-    # (only if we had an existing backup)
-    # ------------------------------
+    # --- Identify deleted files and move them to trash ---
     if [[ -n "$existing_backup" ]]; then
-      info "Checking backup for deleted files to move into trash..."
+      info "Checking for deleted files..."
       while IFS= read -r bfile; do
-        # File path relative to backup_dir
-        local rel src_file base trash_file
-        rel="${bfile#$backup_dir/}"
-        src_file="$src/$rel"
-
+        local rel="${bfile#$backup_dir/}"
+        local src_file="$src/$rel"
         if [[ ! -e "$src_file" ]]; then
+          local base trash_file
           base="$(basename "$rel")"
           trash_file="$trash_source_dir/${base}.$timestamp"
           mv "$bfile" "$trash_file"
-          log_info "Moved deleted file to trash: $rel -> $trash_file"
+          log_info "Deleted file moved to trash: $rel"
         fi
-      done < <(find "$backup_dir" -type f 2>/dev/null)
-
-      # Clean up any now-empty directories in the backup
+      done < <(find "$backup_dir" -type f)
       find "$backup_dir" -type d -empty -delete 2>/dev/null
     fi
 
-    # ------------------------------
-    # Run rsync to update backup (add/overwrite files)
-    # ------------------------------
-    echo
-    info "Running rsync from source to backup directory..."
+    # --- Run rsync to update backup directory ---
+    info "Synchronizing files using rsync..."
     rsync -av "$src"/ "$backup_dir"/
-    local rsync_status=$?
-
-    if (( rsync_status != 0 )); then
-      err "rsync failed with status $rsync_status."
-      log_error "Incremental backup failed (rsync status=$rsync_status) for source=$src"
+    if (( $? != 0 )); then
+      err "rsync failed."
+      log_error "rsync error during backup."
       box_bottom
-
-      printf "\nPress M to return, B to run another backup: "
-      while true; do
-        read -r key
-        case "$key" in
+      printf "\nPress M to exit, B to retry: "
+      while read -r k; do
+        case "$k" in
           M|m) return ;;
           B|b) break ;;
         esac
@@ -148,22 +150,17 @@ create_incremental_backup() {
       continue
     fi
 
-    # ------------------------------
-    # Rename backup folder to reflect new timestamp
-    # Ensures EXACTLY ONE backup dir per source with fresh timestamp
-    # ------------------------------
-    new_backup_dir="$data_dest/${source_name}_$timestamp"
+    # Rename backup folder with fresh timestamp
+    local new_backup_dir="$data_dest/${source_name}_$timestamp"
     if [[ "$backup_dir" != "$new_backup_dir" ]]; then
       mv "$backup_dir" "$new_backup_dir"
       backup_dir="$new_backup_dir"
     fi
 
-    # ------------------------------
-    # Stats and summary
-    # ------------------------------
+    # --- Summary ---
     local file_count size
-    file_count="$(find "$backup_dir" -type f 2>/dev/null | wc -l)"
-    size="$(du -sh "$backup_dir" 2>/dev/null | awk '{print $1}')"
+    file_count="$(find "$backup_dir" -type f | wc -l)"
+    size="$(du -sh "$backup_dir" | awk '{print $1}')"
 
     echo
     echo "=== Incremental Backup Summary ==="
@@ -171,61 +168,77 @@ create_incremental_backup() {
     echo "Backup folder    : $backup_dir"
     echo "Files in backup  : $file_count"
     echo "Total size       : $size"
-    ok "Incremental backup completed successfully."
-
-    log_info "Incremental backup at $backup_dir (files=$file_count, size=$size)"
+    ok "Backup completed successfully."
+    log_info "Backup complete: $backup_dir"
 
     box_bottom
     printf "\nPress M to return, B to run another backup: "
-    while true; do
-      read -r key
+
+    while read -r key; do
       case "$key" in
-        M|m) return ;;   # exit function to main menu
-        B|b) break ;;    # restart outer while for another backup
+        M|m) return ;;
+        B|b) break ;;
       esac
     done
 
-  done  # end while true
+  done  # end while
 }
 
-# ------------------------------------------------------------
-# 2.2 BACKUP VERIFICATION (source vs latest backup)
-# With B-option to verify again
-# ------------------------------------------------------------
+
+# =====================================================================
+# OPTION 4 — Backup Verification
+# =====================================================================
+
+# Verify that latest backup matches the source directory
 verify_backup_integrity() {
   while true; do
     clear
     box_top
     box_row "$YELLOW$BOLD" "BACKUP VERIFICATION"
     box_sep
-
     echo "Press M to return to menu."
     echo
 
-    # ------------------------------
-    # Prompt: Source Directory
-    # ------------------------------
+    # --- Ask for source directory ---
     printf "Enter source directory to verify [%s]: " "$BACKUP_SOURCE"
     read -r src_in
     [[ "$src_in" =~ ^[Mm]$ ]] && return
     local src="${src_in:-$BACKUP_SOURCE}"
 
-    # ------------------------------
-    # Prompt: Backup Data Directory
-    # ------------------------------
+    if [[ ! -d "$src" ]]; then
+      err "Source directory does not exist: $src"
+      log_error "Verification failed – missing source: $src"
+      box_bottom
+      printf "\nPress M to return..."
+      while read -r k; do [[ "$k" =~ ^[Mm]$ ]] && return; done
+    fi
+
+    # --- Ask for backup data directory ---
     printf "Enter backup data directory [%s]: " "$BACKUP_DATA_DIR"
     read -r dest_in
     [[ "$dest_in" =~ ^[Mm]$ ]] && return
     local data_dest="${dest_in:-$BACKUP_DATA_DIR}"
     [[ "$data_dest" != /* ]] && data_dest="$BASE_DIR/$data_dest"
-
     echo
 
+    if [[ ! -d "$data_dest" ]]; then
+      err "Backup data directory does not exist: $data_dest"
+      log_error "Verification failed – missing backup data folder."
+      box_bottom
+      printf "\nPress M to return, B to try again: "
+      while read -r k; do
+        case "$k" in
+          M|m) return ;;
+          B|b) break ;;
+        esac
+      done
+      continue
+    fi
+
+    # Find latest backup folder
     local source_name latest
     source_name="$(basename "$src")"
-
-    # Find latest backup directory for this source
-    latest="$(find "$data_dest" -maxdepth 1 -type d -name "${source_name}_*" 2>/dev/null | sort | tail -n 1)"
+    latest="$(find "$data_dest" -maxdepth 1 -type d -name "${source_name}_*" | sort | tail -n 1)"
 
     echo "Source directory : $src"
     echo "Backup data dir  : $data_dest"
@@ -233,11 +246,11 @@ verify_backup_integrity() {
     echo
 
     if [[ -z "$latest" ]]; then
-      err "No backup directory found for source '$source_name'."
+      err "No backup found for this source."
+      log_warn "Verification – no backup for $source_name"
       box_bottom
-      printf "\nPress M to return to menu, B to verify again: "
-      while true; do
-        read -r k
+      printf "Press M to return, B to retry: "
+      while read -r k; do
         case "$k" in
           M|m) return ;;
           B|b) break ;;
@@ -246,32 +259,19 @@ verify_backup_integrity() {
       continue
     fi
 
-    if [[ ! -d "$src" ]]; then
-      err "Source directory does not exist: $src"
-      box_bottom
-      printf "\nPress M to return to menu, B to verify again: "
-      while true; do
-        read -r k
-        case "$k" in
-          M|m) return ;;
-          B|b) break ;;
-        esac
-      done
-      continue
-    fi
-
-    local src_count backup_count
-    src_count="$(find "$src" -type f 2>/dev/null | wc -l)"
-    backup_count="$(find "$latest" -type f 2>/dev/null | wc -l)"
+    # Count files
+    local src_count backup_count mismatches total_checked
+    src_count="$(find "$src" -type f | wc -l)"
+    backup_count="$(find "$latest" -type f | wc -l)"
 
     echo "Source files : $src_count"
     echo "Backup files : $backup_count"
     echo
 
-    local mismatches=0 total_checked=0
+    mismatches=0
+    total_checked=0
 
-    info "Comparing source files with latest backup..."
-
+    # Compare each file
     while IFS= read -r sfile; do
       ((total_checked++))
       local rel bfile
@@ -285,10 +285,10 @@ verify_backup_integrity() {
       fi
 
       if ! cmp -s "$sfile" "$bfile"; then
-        warn "Content mismatch: $rel"
+        warn "Mismatch: $rel"
         ((mismatches++))
       fi
-    done < <(find "$src" -type f 2>/dev/null)
+    done < <(find "$src" -type f)
 
     echo
     echo "Files checked : $total_checked"
@@ -296,20 +296,22 @@ verify_backup_integrity() {
     echo
 
     if (( mismatches == 0 )); then
-      ok "Backup verification PASSED – all source files exist and match in latest backup."
+      ok "Backup verification PASSED."
+      log_info "Verification passed for $src"
     else
-      err "Backup verification FAILED – some files are missing or differ."
+      err "Backup verification FAILED."
+      log_error "Verification failed – mismatches=$mismatches"
     fi
 
     box_bottom
-    printf "\nPress M to return to menu, B to run verification again: "
-    while true; do
-      read -r k
+    printf "\nPress M to return, B to run verification again: "
+
+    while read -r k; do
       case "$k" in
-        M|m) return ;;  # exit to main menu
-        B|b) break ;;   # repeat verification loop
+        M|m) return ;;
+        B|b) break ;;
       esac
     done
 
-  done  # end while true
+  done
 }

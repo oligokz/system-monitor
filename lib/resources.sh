@@ -1,5 +1,11 @@
-# System resource monitoring
+########################################################################
+# FILE NAME : resources.sh
+# PURPOSE   : System resource monitoring (CPU, memory, disk)
+# AUTHOR    : Bernard Lim (8001381B)
+# VERSION   : 1.0
+########################################################################
 
+# Check CPU load, memory usage and root filesystem usage
 check_system_resources() {
   clear
   box_top

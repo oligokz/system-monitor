@@ -1,8 +1,16 @@
+########################################################################
+# FILE NAME : filesystem.sh
+# PURPOSE   : Filesystem usage reporting & analysis
+# AUTHOR    : Bernard Lim (8001381B)
+# VERSION   : 1.0
+########################################################################
+
 # =====================================================================
 # FILESYSTEM USAGE REPORT MODULE (Option 5)
 # With analyse-again mini-menu and M-to-menu navigation
 # =====================================================================
 
+# Generate a filesystem usage report and save it into reports/
 generate_filesystem_report() {
 
   while true; do   # LOOP until user chooses M to return to menu
@@ -28,6 +36,21 @@ generate_filesystem_report() {
     esac
 
     local path="${path_in:-$FS_DEFAULT_PATH}"
+
+    # Validate the path before doing heavy work
+    if [[ ! -d "$path" ]]; then
+      err "Invalid path: $path"
+      log_error "Filesystem report failed – invalid path: $path"
+      box_bottom
+      printf "\nPress M to return to menu... "
+      while true; do
+        read -r key
+        case "$key" in
+          M|m) return ;;
+          *) : ;;
+        esac
+      done
+    fi
 
     echo
     echo "Generating report for: $path"

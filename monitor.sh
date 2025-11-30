@@ -1,20 +1,32 @@
 #!/bin/bash
 ########################################################################
-# System Monitor - Linux System Monitoring & Backup Utility (Modular)
-# Course : CIML019 - Software Defined Infrastructure & Services
-# Author : BERNARD LIM KOK SONG - 8001381B
-# Version: 1.0
+# FILE NAME : monitor.sh
+# PROJECT   : System Monitor – Linux System Monitoring & Backup Utility
+# COURSE    : CIML019 - Software Defined Infrastructure & Services
+# AUTHOR    : Bernard Lim (8001381B)
+# VERSION   : 1.0
+# DATE      : 2025-11-30
 #
-# Main controller script:
-#   - Loads config and shared variables
-#   - Loads all function modules from ./lib
-#   - Displays interactive menu
-#   - Routes user choices to functions
+# DESCRIPTION:
+#   Main controller script for System Monitor. Responsible for:
+#     • Loading configuration values
+#     • Loading feature modules from ./lib
+#     • Performing dependency checks
+#     • Displaying interactive menu
+#     • Routing user selections to modules
+#
+#   Auto-created folders:
+#     config/   – settings.conf
+#     logs/     – system_monitor.log
+#     backups/  – incremental backups
+#     reports/  – filesystem/process reports
+#     tests/    – test results
 ########################################################################
 
-# -----------------------------
-# Project Paths
-# -----------------------------
+
+# =====================================================================
+# PROJECT PATHS & REQUIRED DIRECTORIES
+# =====================================================================
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_DIR="$BASE_DIR/lib"
 CONFIG_DIR="$BASE_DIR/config"
@@ -25,9 +37,10 @@ TESTS_DIR="$BASE_DIR/tests"
 
 mkdir -p "$LIB_DIR" "$CONFIG_DIR" "$LOG_DIR" "$BACKUP_DEST_BASE" "$REPORTS_DIR" "$TESTS_DIR"
 
-# -----------------------------
-# Default Config Values
-# -----------------------------
+
+# =====================================================================
+# DEFAULT CONFIG VALUES (Overridden by settings.conf)
+# =====================================================================
 DEFAULT_BACKUP_SOURCE="/home/$USER/documents"
 DEFAULT_BACKUP_DEST="$BACKUP_DEST_BASE"
 DEFAULT_FS_PATH="/"
@@ -39,43 +52,57 @@ LOG_FILE="$LOG_DIR/system_monitor.log"
 LOG_LEVEL="INFO"
 VERBOSE="false"
 
-# Load settings.conf if present (overrides defaults above)
+# Load optional settings file
 if [[ -f "$CONFIG_DIR/settings.conf" ]]; then
-  # shellcheck source=/dev/null
+  # shellcheck disable=SC1090
   source "$CONFIG_DIR/settings.conf"
 fi
 
-# Normalise relative paths in config (make them project-relative)
+# Normalize paths
 [[ "$BACKUP_DEST" != /* ]] && BACKUP_DEST="$BASE_DIR/$BACKUP_DEST"
 [[ "$LOG_FILE"    != /* ]] && LOG_FILE="$BASE_DIR/$LOG_FILE"
 [[ -z "$FS_DEFAULT_PATH" ]] && FS_DEFAULT_PATH="/"
 
 LAST_BACKUP_REF_FILE="$BACKUP_DEST/.last_backup"
 
-# -----------------------------
-# Load Modules
-# -----------------------------
-# logging first so others can use it
-# shellcheck source=/dev/null
+
+# =====================================================================
+# LOAD MODULES (logging first)
+# =====================================================================
+# Logging module
+# shellcheck disable=SC1090
 source "$LIB_DIR/logging.sh"
 log_init
 
-# shellcheck source=/dev/null
+# UI module
+# shellcheck disable=SC1090
 source "$LIB_DIR/ui.sh"
-# shellcheck source=/dev/null
+
+# System resources
+# shellcheck disable=SC1090
 source "$LIB_DIR/resources.sh"
-# shellcheck source=/dev/null
+
+# User activity
+# shellcheck disable=SC1090
 source "$LIB_DIR/users.sh"
-# shellcheck source=/dev/null
+
+# Backup management
+# shellcheck disable=SC1090
 source "$LIB_DIR/backup.sh"
-# shellcheck source=/dev/null
+
+# Filesystem reporting
+# shellcheck disable=SC1090
 source "$LIB_DIR/filesystem.sh"
-# shellcheck source=/dev/null
+
+# Process analysis
+# shellcheck disable=SC1090
 source "$LIB_DIR/process.sh"
 
-# -----------------------------
-# Dependency Check
-# -----------------------------
+
+# =====================================================================
+# FUNCTION: check_dependencies
+# PURPOSE : Ensure required system commands exist
+# =====================================================================
 check_dependencies() {
   local missing=()
   local deps=(uptime free df who last find rsync du ps awk date)
@@ -88,26 +115,28 @@ check_dependencies() {
 
   if ((${#missing[@]})); then
     err "Missing required commands: ${missing[*]}"
-    echo "Please install them and re-run this script."
+    echo "Please install them and re-run System Monitor."
     log_error "Missing dependencies: ${missing[*]}"
     exit 1
   fi
 }
 
-# -----------------------------
-# Menu / Help
-# -----------------------------
+
+# =====================================================================
+# FUNCTION: display_menu
+# PURPOSE : Render main menu
+# =====================================================================
 display_menu() {
   clear
 
-  # Title box
+  # Title box (UPDATED to System Monitor)
   box_top
-  box_row "$PINK$BOLD" "LINUX SYSTEM MONITORING"
-  box_row "$PINK$BOLD" "& BACKUP UTILITY - SysSnapshot"
+  box_row "$PINK$BOLD" "SYSTEM MONITOR"
+  box_row "$PINK$BOLD" "LINUX SYSTEM MONITORING & BACKUP UTILITY"
   box_row "$PINK$BOLD" "VERSION 1.0"
   box_bottom
 
-  # Joined menu box
+  # Menu block
   box_top
 
   # SYSTEM HEALTH
@@ -139,37 +168,44 @@ display_menu() {
   printf "\n%sEnter choice (0–6): %s" "$BOLD" "$RESET"
 }
 
+
+# =====================================================================
+# FUNCTION: show_help
+# PURPOSE : CLI help
+# =====================================================================
 show_help() {
   cat <<EOF
-SysSnapshot - Linux System Monitoring & Backup Utility (Modular)
+System Monitor – Linux System Monitoring & Backup Utility
 
 Usage:
-  ./monitor.sh            # run interactive menu
-  ./monitor.sh --help     # show this help
+  ./monitor.sh            # Run interactive menu
+  ./monitor.sh --help     # Display this help
 
 Project structure:
-  monitor.sh              - main controller
-  lib/*.sh                - feature modules
-  config/settings.conf    - configuration (paths, logging)
+  monitor.sh              - main script
+  lib/*.sh                - modules
+  config/settings.conf    - config file
   logs/system_monitor.log - log file
   backups/                - backup destination
   reports/                - generated reports
-  tests/                  - test scripts
+  tests/                  - manual test results
 
 EOF
 }
 
-# -----------------------------
-# Entry Point
-# -----------------------------
+
+# =====================================================================
+# ENTRY POINT
+# =====================================================================
 if [[ "$1" == "--help" || "$1" == "-h" ]]; then
   show_help
   exit 0
 fi
 
 check_dependencies
-log_info "SysSnapshot started (modular version)."
+log_info "System Monitor started."
 
+# Main interactive loop
 while true; do
   display_menu
   read -r choice
@@ -180,7 +216,7 @@ while true; do
     4) verify_backup_integrity ;;
     5) generate_filesystem_report ;;
     6) analyze_running_processes ;;
-    0) echo "Goodbye!"; log_info "SysSnapshot exited by user."; exit 0 ;;
+    0) echo "Goodbye!"; log_info "System Monitor exited by user."; exit 0 ;;
     *) err "Invalid choice. Please enter a number between 0 and 6."; sleep 1 ;;
   esac
 done

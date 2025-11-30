@@ -1,5 +1,11 @@
-# User activity monitoring
+########################################################################
+# FILE NAME : users.sh
+# PURPOSE   : User activity / session monitoring functions
+# AUTHOR    : Bernard Lim (8001381B)
+# VERSION   : 1.0
+########################################################################
 
+# Track currently logged-in users and multi-session activity
 track_user_activity() {
   clear
   box_top
