@@ -1,4 +1,3 @@
-```markdown
 # SysSnapshot — Linux System Monitoring & Backup Utility
 
 **Author:** Bernard Lim  
@@ -83,52 +82,72 @@ Below are the actual outputs from SysSnapshot, showing its capabilities in actio
 ---
 
 ## 🟦 1. Main Menu  
-![Main Menu](screenshots/main_menu.png)
+The central navigation hub showing all available system utilities.
+
+![Main Menu](screenshots/main-menu.png)
 
 ---
 
-## 🟦 2. System Resources (Option 1)
-![System Resources](screenshots/system_resources.png)
+## 🟦 2. System Resources (Option 1)  
+Displays CPU load averages, memory usage, and disk usage, along with health status.
+
+![System Resources](screenshots/system-resources.png)
 
 ---
 
-## 🟦 3. User Activity & Sessions (Option 2)
-![User Activity](screenshots/user_activity.png)
+## 🟦 3. User Activity & Sessions (Option 2)  
+Shows logged-in users, timestamps, session durations, and multi-session detection.
+
+![User Activity](screenshots/user-activity.png)
 
 ---
 
-## 🟦 4. Incremental Backup – Start Prompt (Option 3)
-![Backup Start](screenshots/backup_start.png)
+## 🟦 4. Incremental Backup – Start Prompt (Option 3)  
+User is prompted for the source directory and the backup location.
+
+![Backup Start](screenshots/backup-start.png)
 
 ---
 
-## 🟦 5. Incremental Backup – Successful Backup
-![Backup Success](screenshots/backup_success.png)
+## 🟦 5. Incremental Backup – Successful Backup  
+Shows rsync activity, deleted file handling, and backup summary including file count and size.
+
+![Backup Success](screenshots/backup-success.png)
 
 ---
 
-## 🟦 6. Backup Verification – PASS (Option 4)
-![Verify PASS](screenshots/verification_pass.png)
+## 🟦 6. Backup Verification – PASS (Option 4)  
+All files match between source and the most recent backup.
+
+![Verify PASS](screenshots/verify-pass.png)
 
 ---
 
-## 🟦 7. Deleted File in Trash
-![Trash Folder](screenshots/trash_folder.png)
+## 🟦 7. Deleted File in Trash  
+SysSnapshot safely moves deleted items into timestamped trash directories instead of discarding them.
+
+![Trash Folder](screenshots/trash-folder.png)
 
 ---
 
-## 🟦 8. Backup Verification – FAIL
-![Verify FAIL](screenshots/verification_fail.png)
+## 🟦 8. Backup Verification – FAIL  
+The system detects missing files and lists exactly which ones differ.
+
+![Verify FAIL](screenshots/verify-fail.png)
 
 ---
 
-## 🟦 9. Filesystem Report (Option 5)
-![Filesystem Report](screenshots/filesystem_report.png)
+## 🟦 9. Filesystem Report (Option 5)  
+A complete analysis including directory sizes, filesystem types, and most populated folders.
+
+![Filesystem Report](screenshots/filesystem-report.png)
 
 ---
 
-## 🟦 10. Process Analysis (Option 6)
-![Process Analysis](screenshots/process_analysis.png)
+## 🟦 10. Process Analysis (Option 6)  
+Shows top 10 CPU processes, top 10 memory users, process states, and long-running processes.
+
+![Process Analysis](screenshots/process-analysis.png)
 
 ---
 
@@ -144,4 +163,4 @@ Below are the actual outputs from SysSnapshot, showing its capabilities in actio
 
 SysSnapshot successfully meets the requirements of the CIML019 assignment by delivering a robust, modular, and user-friendly system monitoring toolkit.  
 Its incremental backup with a trash mechanism, detailed filesystem analysis, and clear UI make it both practical and educational — ideal for environments where lightweight, transparent tools are preferred.
-```
+
