@@ -11,9 +11,6 @@ SysSnapshot is a modular Bash-based toolkit designed to monitor system health, t
 This project was developed for **CIML019 – Software-Defined Infrastructure & Services (Assignment 1)**.
 
 ---
-
-## 📌 Table of Contents
-
 ## 📌 Table of Contents
 
 1. [Overview](#overview)  
