@@ -1,8 +1,8 @@
 #!/bin/bash
 ########################################################################
-# SysSnapshot - Linux System Monitoring & Backup Utility (Modular)
+# System Monitor - Linux System Monitoring & Backup Utility (Modular)
 # Course : CIML019 - Software Defined Infrastructure & Services
-# Author : <PUT YOUR NAME HERE>
+# Author : BERNARD LIM KOK SONG - 8001381B
 # Version: 1.0
 #
 # Main controller script:

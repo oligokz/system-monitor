@@ -1,0 +1,26 @@
+=== Filesystem Report ===
+Generated: 2025-11-30 07:36:00
+Path     : /
+
+Top 10 Largest Directories:
+2.0G	//usr
+518M	//var
+113M	//boot
+84M	//home
+6.2M	//etc
+964K	//run
+44K	//tmp
+16K	//lost+found
+8.0K	//snap
+4.0K	//srv
+
+Filesystem Usage by Type:
+  ext4: 2.6G / 61.8G (4%)
+  vfat: 0.0G / 0.1G (6%)
+  tmpfs: 0.0G / 1.4G (0%)
+
+Directory with Most Files:
+  /usr/src/linux-headers-6.8.0-71-generic/include/config (9573 files)
+
+Total Space for /:
+  2.6G used of 61G (5%)

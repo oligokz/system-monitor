@@ -1,8 +1,4 @@
-2025-11-20 07:21:10 [INFO] SysSnapshot started (modular version).
-2025-11-20 07:21:33 [INFO] Incremental backup at /home/cisco/system-monitor/backups/data/documents_2025-11-20_07-21 (files=1, size=20K)
-2025-11-20 07:23:01 [INFO] Filesystem report generated at /home/cisco/system-monitor/reports/fs_2025-11-20_07-22-56.txt (path=/)
-2025-11-20 07:23:29 [INFO] Filesystem report generated at /home/cisco/system-monitor/reports/fs_2025-11-20_07-23-29.txt (path=/home/cisco/documents)
-2025-11-20 07:23:42 [INFO] Process analysis completed (long_running=0)
-2025-11-20 07:23:58 [INFO] System resources checked (status=0)
-2025-11-20 07:24:04 [INFO] User activity checked (sessions=2)
-2025-11-20 07:30:53 [INFO] SysSnapshot exited by user.
+2025-11-30 13:27:30 [INFO] SysSnapshot started (modular version).
+2025-11-30 13:27:42 [INFO] Incremental backup at /home/cisco/system-monitor/backups/data/documents_2025-11-30_13-27 (files=3, size=28K)
+2025-11-30 13:27:52 [INFO] Filesystem report generated at /home/cisco/system-monitor/reports/fs_2025-11-30_13-27-51.txt (path=/)
+2025-11-30 13:28:00 [INFO] SysSnapshot exited by user.

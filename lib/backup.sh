@@ -190,7 +190,6 @@ create_incremental_backup() {
 
 # ------------------------------------------------------------
 # 2.2 BACKUP VERIFICATION (source vs latest backup)
-# Deleted items are NOT counted as mismatch
 # With B-option to verify again
 # ------------------------------------------------------------
 verify_backup_integrity() {
