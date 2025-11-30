@@ -1,53 +1,39 @@
 # SysSnapshot — Linux System Monitoring & Backup Utility
 
-**By:** Bernard Lim  
-**Assignment:** CIML019 (Software-Defined Infrastructure & Services)
+**Author:** Bernard Lim  
+**Module:** CIML019 – Software-Defined Infrastructure & Services  
 
-## ✅ Overview  
-SysSnapshot is a modular Linux system-monitoring and backup toolkit written in Bash.  
-It provides a unified command-line interface to:
-
-- Monitor system resources (CPU load, memory, disk usage)  
-- Track active user sessions  
-- Perform incremental backups with a trash-based deletion tracking system  
-- Verify backup integrity (file presence & content)  
-- Generate filesystem usage reports  
-- Analyze running processes (top CPU/memory, process states, long-running jobs)  
-
-This project is ideal for students, sysadmins, or anyone who wants a lightweight, self-contained system monitoring and backup solution without installing heavy packages.
+SysSnapshot is a modular Bash-based toolkit designed to provide essential system monitoring and safe incremental backups on Linux systems.  
+It offers a structured menu-driven interface, detailed resource insights, backup verification, and filesystem analytics — all without installing heavy external packages.
 
 ---
 
-## 📁 Repository Structure
+## 📁 Project Structure
 
 ```
 system-monitor/
-│── monitor.sh              # Main script & menu system  
-│── lib/                    # Modular function libraries  
-│   ├── ui.sh               # UI formatting (colors, boxes)  
-│   ├── logging.sh          # Multi-level logging engine  
-│   ├── resources.sh        # System resource monitoring  
-│   ├── users.sh            # User session tracking  
-│   ├── backup.sh           # Backup & verification logic  
-│   ├── filesystem.sh       # Filesystem reporting  
-│   └── process.sh          # Process analysis functions  
-│── config/                 
-│   └── settings.conf       # Configuration defaults  
-│── logs/                   
-│   └── system_monitor.log  # Execution log  
-│── backups/                
-│   ├── data/               # Incremental backups  
-│   └── trash/              # Deleted files from backups  
-│── reports/                # Saved filesystem analysis reports  
-│── tests/                  # (Optional) test scripts & output snapshots  
-└── README.md               # Project documentation (this file)  
+│── monitor.sh                # Main script & menu
+│── lib/                      # Feature modules
+│   ├── ui.sh
+│   ├── logging.sh
+│   ├── resources.sh
+│   ├── users.sh
+│   ├── backup.sh
+│   ├── filesystem.sh
+│   └── process.sh
+│── backups/                  # Backup + Trash system
+│── logs/                     # Log output
+│── reports/                  # Filesystem analysis reports
+│── config/settings.conf      # Default settings
+│── screenshots/              # Images used in this README
+└── README.md
 ```
 
 ---
 
 ## ⚙️ Installation
 
-Clone or download the repository:
+Clone the repository:
 
 ```bash
 git clone https://github.com/oligokz/system-monitor.git
@@ -60,76 +46,121 @@ Make the main script executable:
 chmod +x monitor.sh
 ```
 
-Ensure required directories exist (Git handles most automatically):
-
-```bash
-mkdir -p config logs backups/data backups/trash reports
-```
-
----
-
-## 🚀 Usage
-
-Run the main menu script:
+Run the tool:
 
 ```bash
 ./monitor.sh
 ```
 
-Then choose from the menu:
+---
 
-| Option | Action |
-|--------|--------|
-| 1 | Check system resources (CPU, memory, disk) |
-| 2 | View active user sessions & durations |
-| 3 | Create an incremental backup |
-| 4 | Verify backup integrity |
-| 5 | Generate filesystem usage report |
-| 6 | Analyze running processes (CPU, Memory, States) |
-| 0 | Exit the tool |
+## 🚀 Features
 
-For backup or report options, follow on-screen prompts for source paths and settings.
+### 🔹 System Health Monitoring  
+Check CPU load, RAM usage, disk consumption, and receive OK/WARN/ERR status indicators.
+
+### 🔹 User Activity Tracking  
+View who is logged in, session duration, and detect multiple sessions.
+
+### 🔹 Incremental Backup System  
+Safely back up files with automatic trashing of deleted items — no silent overwrite or loss.
+
+### 🔹 Backup Integrity Verification  
+Detect missing, edited, or mismatched files between source and backup.
+
+### 🔹 Filesystem Usage Reporting  
+Analyze directory sizes, largest folders, most populated paths, and filesystem type usage.
+
+### 🔹 Process Analysis  
+Identify top CPU/memory consumers, process states, and long-running jobs.
 
 ---
 
-## 🧰 Features & Highlights
-
-- Modular architecture — easy to maintain and extend  
-- Interactive box-style UI with colors & formatting  
-- Incremental backup with “trash” for deleted files (safe file retention)  
-- Backup verification: ensures both presence and content integrity  
-- Detailed filesystem analysis and reporting  
-- Process inspection including long-running job detection  
-- Simple Bash-only implementation — no external dependencies beyond standard Linux utilities  
+# 🧪 Example Usage & Output  
+Below are the actual outputs from SysSnapshot, showing its capabilities in action.
 
 ---
 
-## ⚠️ Known Limitations
+## 🟦 1. Main Menu  
+The central navigation hub showing all available system utilities.
 
-- `du`, `find`, and filesystem scans may be slow on large directories  
-- Trash folder grows indefinitely — manual cleanup required  
-- Script assumes GNU tools (e.g. `date`, `ps`) — may not work on minimalist distros  
-- No automatic backup rotation or compression  
-- Terminal must support colors & Unicode for optimal UI  
+![Main Menu](screenshots/main-menu.png)
 
 ---
 
-## 🧪 (Optional) Example Usage & Output
+## 🟦 2. System Resources (Option 1)  
+Displays CPU load averages, memory usage, and disk usage, along with health status.
 
-(Add your own terminal screenshots or sample output here — e.g., CPU check output, backup summary, filesystem report preview.)
-
----
-
-## 📄 License
-
-You can choose to add an open-source license — e.g., MIT or GPL.  
-*(If you want, I can provide a `LICENSE` file template.)*
+![System Resources](screenshots/system-resources.png)
 
 ---
 
-## 📝 Acknowledgments
+## 🟦 3. User Activity & Sessions (Option 2)  
+Shows logged-in users, timestamps, session durations, and multi-session detection.
 
-- Built as part of the CIML019 module for the Diploma in ICT Systems, Services & Support  
-- Bash + core utilities only — no external dependencies  
-- Inspiration and guidance from classic Unix shell scripting practices  
+![User Activity](screenshots/user-activity.png)
+
+---
+
+## 🟦 4. Incremental Backup – Start Prompt (Option 3)  
+User is prompted for the source directory and the backup location.
+
+![Backup Start](screenshots/backup-start.png)
+
+---
+
+## 🟦 5. Incremental Backup – Successful Backup  
+Shows rsync activity, deleted file handling, and backup summary including file count and size.
+
+![Backup Success](screenshots/backup-success.png)
+
+---
+
+## 🟦 6. Backup Verification – PASS (Option 4)  
+All files match between source and the most recent backup.
+
+![Verify PASS](screenshots/verify-pass.png)
+
+---
+
+## 🟦 7. Deleted File in Trash  
+SysSnapshot safely moves deleted items into timestamped trash directories instead of discarding them.
+
+![Trash Folder](screenshots/trash-folder.png)
+
+---
+
+## 🟦 8. Backup Verification – FAIL  
+The system detects missing files and lists exactly which ones differ.
+
+![Verify FAIL](screenshots/verify-fail.png)
+
+---
+
+## 🟦 9. Filesystem Report (Option 5)  
+A complete analysis including directory sizes, filesystem types, and most populated folders.
+
+![Filesystem Report](screenshots/filesystem-report.png)
+
+---
+
+## 🟦 10. Process Analysis (Option 6)  
+Shows top 10 CPU processes, top 10 memory users, process states, and long-running processes.
+
+![Process Analysis](screenshots/process-analysis.png)
+
+---
+
+# 📝 Notes
+
+- Scripts use only standard Linux tools (`ps`, `du`, `find`, `rsync`, etc.).  
+- Designed for Ubuntu/Debian-based systems but should work on most Linux distributions.  
+- All functions are modular, easy to extend, and well-commented for learning purposes.
+
+---
+
+# 🎯 Conclusion
+
+SysSnapshot successfully meets the requirements of the CIML019 assignment by delivering a robust, modular, and user-friendly system monitoring toolkit.  
+Its incremental backup with a trash mechanism, detailed filesystem analysis, and clear UI make it both practical and educational — ideal for environments where lightweight, transparent tools are preferred.
 
