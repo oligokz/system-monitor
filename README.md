@@ -1,73 +1,37 @@
-# system-monitor  
-*A Modular Linux System Monitoring & Backup Utility*
+# System Monitor  
+A modular Bash-based Linux system monitoring & backup utility.
 
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 ![Shell](https://img.shields.io/badge/Shell-Bash-blue)
 ![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey)
 ![Project](https://img.shields.io/badge/Course-CIML019-orange)
 
-**system-monitor** is a modular Bash-based toolkit designed to monitor system health, track user activity, perform incremental backups, verify backup integrity, generate filesystem usage reports, and analyse running processes.
-
-This project was developed for **CIML019 – Software-Defined Infrastructure & Services (Assignment 1)**.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)  
-2. [Project Structure](#project-structure)  
-3. [Installation](#installation)  
-4. [Module Overview](#module-overview)  
-5. [Settings Configuration](#settings-configuration)  
-6. [Features](#features)  
-7. [Notes / Limitations](#notes--limitations)  
+System Monitor provides real-time system metrics, user activity tracking, incremental backups, trash-based file retention, backup verification, filesystem usage reporting, and process analysis.  
+It is designed using a modular architecture and developed for **CIML019 – Software Defined Infrastructure & Services (Assignment 1)**.
 
 ---
 
-## Overview
-
-system-monitor provides the following core functions:
-
-- System resource monitoring  
-- User session tracking with multi-session detection  
-- Incremental backups using `rsync`  
-- Trash-based deleted file retention  
-- Backup integrity verification  
-- Filesystem usage reports  
-- Process analysis (CPU, memory, long-running processes)  
-- Centralised logging with timestamps  
-- Clean, colour-coded ASCII UI layout
-
----
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 system-monitor/
-├── monitor.sh                  # Main launcher & menu controller
-│
-├── lib/                        # Functional modules
-│   ├── ui.sh                   # UI helpers (boxes, colours, formatting)
-│   ├── resources.sh            # CPU, RAM, disk monitoring
-│   ├── users.sh                # User session tracking
-│   ├── backup.sh               # Incremental backup + trash + verification
-│   ├── filesystem.sh           # Filesystem usage analysis
-│   ├── process.sh              # Process monitoring (CPU/MEM/ETIME)
-│   └── logging.sh              # Logging helper + VERBOSE debug mode
-│
+├── monitor.sh
 ├── config/
-│   └── settings.conf           # User configuration overrides
-│
+│   └── settings.conf
+├── lib/
+│   ├── ui.sh
+│   ├── logging.sh
+│   ├── resources.sh
+│   ├── users.sh
+│   ├── backup.sh
+│   ├── filesystem.sh
+│   └── process.sh
 ├── backups/
-│   ├── data/                   # Timestamped backups
-│   └── trash/                  # Deleted files with timestamps
-│
+│   ├── data/
+│   └── trash/
 ├── logs/
-│   └── system_monitor.log      # Centralised log file
-│
-├── reports/                    # Filesystem usage reports (.txt)
-├── screenshots/                # Screenshot images used in README
-└── README.md                   # Documentation
+├── reports/
+└── screenshots/
 ```
 
 ---
@@ -93,36 +57,23 @@ chmod +x monitor.sh
 sudo apt install rsync procps coreutils
 ```
 
-All required directories (`backups`, `logs`, `reports`) are created automatically on first run.
+---
+
+## 📦 Dependencies
+
+| Dependency | Purpose |
+|-----------|---------|
+| **bash (5+)** | Script execution |
+| **rsync** | Incremental backup engine |
+| **procps** | Provides `ps`, `free`, `uptime` |
+| **coreutils** | Provides `df`, `du`, `sort`, `find` |
+| **awk / grep** | Parsing & filtering |
+
+Most Linux distributions already include these packages.
 
 ---
 
-## Module Overview
-
-### ui.sh  
-Provides UI helpers (boxes, colours, formatting).
-
-### resources.sh  
-CPU load, RAM usage, disk usage monitoring.
-
-### users.sh  
-Displays logged-in users, session duration, and multi-session detection.
-
-### backup.sh  
-Handles incremental backups, trash retention, timestamping, and verification.
-
-### filesystem.sh  
-Generates filesystem usage reports.
-
-### process.sh  
-Shows top CPU/memory usage processes and detects long-running processes.
-
-### logging.sh  
-Logging helper (timestamps) + `VERBOSE=1` debug mode support.
-
----
-
-## Settings Configuration
+## ⚙ Settings Configuration
 
 Configuration file:
 
@@ -130,73 +81,171 @@ Configuration file:
 config/settings.conf
 ```
 
-Default:
+Example:
 
 ```ini
 BACKUP_SOURCE="/home"
-BACKUP_DEST="/backups/data"
-VERBOSE=0
+BACKUP_DEST="backups/data"
+FS_DEFAULT_PATH="/"
+LOG_FILE="logs/system_monitor.log"
+LOG_LEVEL="INFO"
+VERBOSE="false"
 ```
 
-### Setting Descriptions
-
-- **BACKUP_SOURCE** – Folder to back up  
-- **BACKUP_DEST** – Destination folder for incremental backups  
-- **VERBOSE** – Enables debug output (0 = off, 1 = on)
-
-### Example screenshot
-
-![Settings Example](screenshots/settings.png)
+![Settings](screenshots/settings.png)
 
 ---
 
-## Features
+## 🧩 Module Overview
 
-### 1. System Resource Monitoring  
-Shows CPU load, RAM usage, disk usage, warnings.  
+### `ui.sh`
+Handles UI box drawing, colours, and layout formatting.
+
+### `logging.sh`
+Controls log writing, timestamps, and VERBOSE mode.
+
+### `resources.sh`
+Displays CPU %, RAM %, uptime, load averages, and swap usage.
+
+### `users.sh`
+Shows current user sessions and last login records.
+
+### `backup.sh`
+- Incremental backups (`rsync`)  
+- Trash retention for deleted files  
+- Automatic directory creation  
+- Backup verification logic
+
+### `filesystem.sh`
+Generates directory size reports using `du -sh`.
+
+### `process.sh`
+Shows:
+- Top CPU processes  
+- Top memory processes  
+- Long-running processes (ETIME)
+
+---
+
+# 🌟 Features
+
+---
+
+## 1️⃣ System Resource Monitoring  
+Real-time CPU, RAM, load averages, uptime, and swap.
+
 ![System Resources](screenshots/system-resources.png)
 
 ---
 
-### 2. User Activity Tracking  
-Displays users, login durations, multi-session detection.  
+## 2️⃣ User Activity Monitoring  
+Displays logged-in users and multi-session usage.
+
 ![User Activity](screenshots/user-activity.png)
 
 ---
 
-### 3. Incremental Backup  
-Uses rsync for safe, timestamped backups.  
-![Backup Start](screenshots/backup-start.png)  
+## 3️⃣ Incremental Backup with Trash System  
+Timestamped backups using `rsync`.
+
+### Backup Start  
+![Backup Start](screenshots/backup-start.png)
+
+### Backup Success  
 ![Backup Success](screenshots/backup-success.png)
 
----
-
-### 4. Backup Integrity Verification  
-Detects missing files, mismatches, and inconsistencies.  
-![Verify Pass](screenshots/verify-pass.png)  
-![Verify Fail](screenshots/verify-fail.png)
+### Deleted File → Trash  
+![Trash](screenshots/trash-folder.png)
 
 ---
 
-### 5. Filesystem Usage Report  
-Generates largest directory lists, file counts, summaries.  
+## 4️⃣ Backup Integrity Verification  
+Compares source + backup file-by-file.
+
+![Verify Pass](screenshots/verify-pass.png)
+
+---
+
+## 5️⃣ Filesystem Usage Report  
+Analyses directory sizes recursively.
+
 ![Filesystem Report](screenshots/filesystem-report.png)
 
 ---
 
-### 6. Process Analysis  
-Shows CPU/memory top processes and long-running ones.  
+## 6️⃣ Process Analysis  
+Displays CPU-heavy, memory-heavy, and long-running processes.
+
 ![Process Analysis](screenshots/process-analysis.png)
 
 ---
 
-## Notes / Limitations
+# ▶ Usage Examples
 
-- Filesystem report may run slowly on large paths  
-- Trash folder grows indefinitely (manual cleanup required)  
-- Verification may fail if files change during comparison  
-- Symlink/device file behaviour may vary  
-- No automatic cleanup of logs/backups  
-- Log file resets on each run  
+---
+
+### 🔹 Launch System Monitor
+
+```
+./monitor.sh
+```
+
+You will see the main menu.
+
+---
+
+### 🔹 Create a Backup
+
+1. Choose **3) Incremental Backup**  
+2. If destination folder doesn’t exist, you will be prompted to create it  
+3. A timestamped backup appears in `backups/data/`
+
+---
+
+### 🔹 Verify Backup Integrity
+
+1. Choose **4) Verify Backup Integrity**  
+2. The tool checks:  
+   - Missing files  
+   - Modified files  
+   - Extra backup files  
+3. Displays a PASS or FAIL summary
+
+---
+
+### 🔹 Generate a Filesystem Report
+
+1. Choose **5) Filesystem Usage Report**  
+2. Report saved under `reports/`  
+3. Includes size of every subdirectory
+
+---
+
+### 🔹 Analyse Processes
+
+1. Choose **6) Process Analysis**  
+2. View Top CPU, Top Memory, and long-running processes
+
+---
+
+# 🛠 Troubleshooting
+
+| Problem | Cause | Solution |
+|---------|--------|----------|
+| “Source directory does not exist” | Wrong path in settings | Correct BACKUP_SOURCE |
+| “Backup directory missing” | First-time run | Tool will prompt to create it |
+| Verification mismatches | Files changed post-backup | Re-run backup |
+| Report shows slow performance | Very large directories | Point FS_DEFAULT_PATH to a smaller folder |
+| Logs growing too large | VERBOSE enabled | Set VERBOSE to false |
+
+---
+
+# ⚠ Notes / Limitations
+
+- Large filesystem scans may take time  
+- Trash folder will accumulate deleted files (manual cleanup recommended)  
+- Backup verification compares file contents and timestamps; changes after backup cause mismatches  
+- Only standard Linux utilities are supported  
+- Not designed for full system or disk image backups  
 
 ---
