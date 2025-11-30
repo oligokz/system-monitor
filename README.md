@@ -12,12 +12,13 @@ SysSnapshot is a modular Bash-based toolkit that monitors system health, tracks 
 
 ## Table of Contents
 
-1. [Overview](#overview)  
-2. [Project Structure](#project-structure)  
-3. [Installation](#installation)  
-4. [Features](#features)  
-5. [Notes / Limitations](#notes--limitations)  
-6. [Conclusion](#conclusion)
+1. [Overview](#overview)
+2. [Project Structure](#project-structure)
+3. [Installation](#installation)
+4. [Configuration](#configuration)
+5. [Features](#features)
+6. [Notes / Limitations](#notes--limitations)
+7. [Conclusion](#conclusion)
 
 ---
 
@@ -93,6 +94,55 @@ sudo apt install rsync procps coreutils
 ```
 
 All required directories (`backups`, `logs`, `reports`) are created automatically on first run.
+
+---
+
+## Configuration
+
+SysSnapshot reads its default values from:
+
+```
+config/settings.conf
+```
+
+This file allows users to customise:
+
+- Default backup source  
+- Default backup destination  
+- Default filesystem scan path  
+- Log file path  
+- Logging verbosity  
+- Verbose mode for debugging  
+
+Here is the full configuration file:
+
+```
+# SysSnapshot configuration file
+
+# Default source for backups (can be any directory you want to demo)
+BACKUP_SOURCE="/home/$USER/documents"
+
+# Default destination for backups (relative to project root or absolute path)
+BACKUP_DEST="backups"
+
+# Default path for filesystem report (option 5)
+FS_DEFAULT_PATH="/"
+
+# Log file location (relative to project root or absolute)
+LOG_FILE="logs/system_monitor.log"
+
+# Log level: ERROR, WARN, INFO, DEBUG
+LOG_LEVEL="INFO"
+
+# Verbose mode: "true" or "false"
+VERBOSE="false"
+```
+
+### How configuration works
+
+- When prompted for input, pressing **ENTER** automatically uses the value from `settings.conf`.
+- You may edit this file to customise the behaviour of backups, logs, reporting, and verbosity.
+- The script always loads this file first before running any module.
 
 ---
 
@@ -188,3 +238,18 @@ Displays:
 
 ---
 
+## Conclusion
+
+SysSnapshot is a modular, maintainable, and fully functional Bash-based monitoring and backup utility.  
+It meets the requirements for **CIML019 Assignment 1** and demonstrates:
+
+- Modular scripting practices  
+- System data parsing  
+- Filesystem operations  
+- Incremental backup strategies  
+- Process and resource analysis  
+- Logging and reporting mechanisms  
+
+You may extend the project with notifications, scheduling, or a richer terminal UI in future iterations.
+
+---
