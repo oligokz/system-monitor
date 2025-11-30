@@ -8,6 +8,8 @@
 
 SysSnapshot is a modular Bash-based toolkit that monitors system health, tracks user activity, performs incremental backups, verifies backup integrity, generates filesystem usage reports, and analyses running processes.
 
+This project was developed for **CIML019 – Software-Defined Infrastructure & Services (Assignment 1)**.
+
 ---
 
 ## Table of Contents
@@ -99,50 +101,27 @@ All required directories (`backups`, `logs`, `reports`) are created automaticall
 
 ## Configuration
 
-SysSnapshot reads its default values from:
+SysSnapshot uses a simple configuration file located at:
 
 ```
 config/settings.conf
 ```
 
-This file allows users to customise:
+This file stores the default backup paths, report paths, log settings, and other basic options used by the program.  
+Users may edit this file to change the default behaviour of the tool.
 
-- Default backup source  
-- Default backup destination  
-- Default filesystem scan path  
-- Log file path  
-- Logging verbosity  
-- Verbose mode for debugging  
+### Example Configuration
 
-Here is the full configuration file:
+![Settings Example](screenshots/settings.png)
 
-```
-# SysSnapshot configuration file
+### Verbose Mode
 
-# Default source for backups (can be any directory you want to demo)
-BACKUP_SOURCE="/home/$USER/documents"
+`VERBOSE` controls whether additional internal messages are shown:
 
-# Default destination for backups (relative to project root or absolute path)
-BACKUP_DEST="backups"
+- `VERBOSE="true"` → shows extra debugging/progress messages  
+- `VERBOSE="false"` → cleaner output (default)
 
-# Default path for filesystem report (option 5)
-FS_DEFAULT_PATH="/"
-
-# Log file location (relative to project root or absolute)
-LOG_FILE="logs/system_monitor.log"
-
-# Log level: ERROR, WARN, INFO, DEBUG
-LOG_LEVEL="INFO"
-
-# Verbose mode: "true" or "false"
-VERBOSE="false"
-```
-
-### How configuration works
-
-- When prompted for input, pressing **ENTER** automatically uses the value from `settings.conf`.
-- You may edit this file to customise the behaviour of backups, logs, reporting, and verbosity.
-- The script always loads this file first before running any module.
+Verbose mode is optional and mainly useful during testing or demonstrations.
 
 ---
 
@@ -250,6 +229,6 @@ It meets the requirements for **CIML019 Assignment 1** and demonstrates:
 - Process and resource analysis  
 - Logging and reporting mechanisms  
 
-You may extend the project with notifications, scheduling, or a richer terminal UI in future iterations.
+Future improvements may include notifications, scheduling, or an enhanced TUI interface.
 
 ---
