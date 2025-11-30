@@ -14,13 +14,15 @@ This project was developed for **CIML019 – Software-Defined Infrastructure & S
 
 ## 📌 Table of Contents
 
+## 📌 Table of Contents
+
 1. [Overview](#overview)  
 2. [Project Structure](#project-structure)  
 3. [Installation](#installation)  
 4. [Features](#features)  
-5. [Example Usage & Output](#example-usage--output)  
-6. [Notes / Limitations](#notes--limitations)  
-7. [Conclusion](#conclusion)
+5. [Notes / Limitations](#notes--limitations)  
+6. [Conclusion](#conclusion)
+
 
 ---
 
