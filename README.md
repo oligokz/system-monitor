@@ -6,8 +6,7 @@ A modular Bash-based Linux system monitoring & backup utility.
 ![Platform](https://img.shields.io/badge/Platform-Linux-lightgrey)
 ![Project](https://img.shields.io/badge/Course-CIML019-orange)
 
-System Monitor provides real-time system metrics, user activity tracking, incremental backups, trash-based file retention, backup verification, filesystem usage reporting, and process analysis.  
-It is designed using a modular architecture and developed for **CIML019 – Software Defined Infrastructure & Services (Assignment 1)**.
+System Monitor provides real-time system metrics, user activity tracking, incremental backups, trash-based file retention, backup verification, filesystem usage reporting, and process analysis. 
 
 ---
 
