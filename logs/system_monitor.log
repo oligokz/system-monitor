@@ -1,6 +1,11 @@
-2025-11-30 17:42:30 [INFO] System Monitor started.
-2025-11-30 17:42:41 [INFO] Backup complete: /home/cisco/system-monitor/backups/data/james_2025-11-30_17-42
-2025-11-30 17:44:37 [ERROR] Filesystem report failed – invalid path: /home/test
-2025-11-30 17:46:06 [INFO] Verification passed for /home/cisco/documents
-2025-11-30 17:46:44 [ERROR] Verification failed – mismatches=1
-2025-11-30 17:48:14 [INFO] User activity checked (sessions=3)
+2025-12-01 07:34:11 [INFO] System Monitor started.
+2025-12-01 07:34:14 [INFO] System resources checked (status=0)
+2025-12-01 07:34:16 [INFO] User activity checked (sessions=1)
+2025-12-01 07:34:22 [INFO] Backup complete: /home/cisco/system-monitor/backups/data/documents_2025-12-01_07-34
+2025-12-01 07:34:52 [INFO] Verification passed for /home/cisco/documents
+2025-12-01 07:35:04 [INFO] Deleted file moved to trash: file30112025-2.txt
+2025-12-01 07:35:04 [INFO] Backup complete: /home/cisco/system-monitor/backups/data/documents_2025-12-01_07-35
+2025-12-01 07:36:49 [INFO] Backup complete: /home/cisco/system-monitor/backups/data/documents_2025-12-01_07-36
+2025-12-01 07:37:16 [INFO] Verification passed for /home/cisco/documents
+2025-12-01 07:37:22 [INFO] Deleted file moved to trash: 01122025-1.txt
+2025-12-01 07:37:22 [INFO] Backup complete: /home/cisco/system-monitor/backups/data/documents_2025-12-01_07-37
