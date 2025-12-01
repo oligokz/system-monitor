@@ -1,0 +1,13 @@
+=== Running test_backup.sh ===
+Timestamp: 2025-12-01_15-01-44
+Test: rsync incremental logic + deleted-file trash + integrity check
+
+TEST 1: Perform incremental backup
+      ? Follow the prompts
+
+[H[2J[3J[38;5;208m┌[0m[38;5;208m──────────────────────────────────────────────[0m[38;5;208m┐[0m
+[38;5;208m│[0m[38;5;226m[1m              INCREMENTAL BACKUP              [0m[38;5;208m│[0m
+[38;5;208m├[0m[38;5;208m──────────────────────────────────────────────[0m[38;5;208m┤[0m
+Press M to return to menu.
+
+Enter source directory [/home/cisco/documents]: 
